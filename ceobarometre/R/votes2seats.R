@@ -18,20 +18,20 @@ dhondt <- function(votes, seats, threshold=0.03) {
 
 #' Allocate seats to parties according to their shares
 #'
-#' @param total_votes An integer with the total number of votes
-#' @param shares A vector with the vote share for each shares2seats
+#' @param seats An integer with the total number of seats
+#' @param p A vector with the vote share for each party
 #' @param threshold The proportion (between 0 and 1) of votes needed
 #'     to be allocated a seat
 #' @return A vector of length \code{length(shares)} with the number of
 #'     seats allocated to each party
 #'
 #' @export
-share2seats <- function(shares, seats, threshold=0.03) {
-  shares_above_thr <- shares > threshold
-  parties_above_thr <- which(shares_above_thr)
-  valid_shares_above_thr <- shares[shares_above_thr]
-  allocation <- rep(0, length(shares))
-  allocation[parties_above_thr] <- dhondt(valid_shares_above_thr, seats)
+share2seats <- function(seats, p, threshold=0.03) {
+  p_above_thr <- p > threshold
+  parties_above_thr <- which(p_above_thr)
+  valid_p_above_thr <- p[p_above_thr]
+  allocation <- rep(0, length(p))
+  allocation[parties_above_thr] <- dhondt(valid_p_above_thr, seats)
   return(allocation)
 }
 
@@ -80,3 +80,4 @@ _simulate <- function(seats, p, N=1000, threshold=0.03, ...) {
               "shares"=simulated_vote_shares))
 }
 
+simulate
