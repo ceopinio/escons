@@ -47,7 +47,7 @@ share2seats <- function(shares, seats, threshold=0.03) {
 #'     simulated vote shares
 #' @importFrom DirichletReg rdirichlet
 simulate_vote_share <- function(p, N, ...) {
-    if (sum(p) != 1) {
+    if (!all.equal(sum(p), 1)) {
         stop("Vote shares do not add up to 1", call.=FALSE)
     }
     return(rdirichlet(N, p))
