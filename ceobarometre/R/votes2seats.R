@@ -8,12 +8,12 @@
 #' @note The function does not handle ties and relies on the internal
 #'     \code{order} function
 dhondt <- function(votes, seats, threshold=0.03) {
-    divisors <- 1:seats
-    quotas <- outer(votes, divisors, '/') ## How to deal with ties
-    last_seat <- quotas[order(quotas, decreasing=TRUE)]
-    receive_seat <- quotas >= last_seat[seats]
-    seats <- rowSums(receive_seat)
-    return(seats)
+  divisors <- 1:seats
+  quotas <- outer(votes, divisors, '/') ## How to deal with ties
+  last_seat <- quotas[order(quotas, decreasing=TRUE)]
+  receive_seat <- quotas >= last_seat[seats]
+  seats <- rowSums(receive_seat)
+  return(seats)
 }
 
 #' Allocate seats to parties according to their shares
@@ -27,12 +27,12 @@ dhondt <- function(votes, seats, threshold=0.03) {
 #'
 #' @export
 share2seats <- function(shares, seats, threshold=0.03) {
-    shares_above_thr <- shares > threshold
-    parties_above_thr <- which(shares_above_thr)
-    valid_shares_above_thr <- shares[shares_above_thr]
-    allocation <- rep(0, length(shares))
-    allocation[parties_above_thr] <- dhondt(valid_shares_above_thr, seats)
-    return(allocation)
+  shares_above_thr <- shares > threshold
+  parties_above_thr <- which(shares_above_thr)
+  valid_shares_above_thr <- shares[shares_above_thr]
+  allocation <- rep(0, length(shares))
+  allocation[parties_above_thr] <- dhondt(valid_shares_above_thr, seats)
+  return(allocation)
 }
 
 #' Simulate vote shares for different parties
@@ -47,10 +47,11 @@ share2seats <- function(shares, seats, threshold=0.03) {
 #'     simulated vote shares
 #' @importFrom DirichletReg rdirichlet
 simulate_vote_share <- function(p, N, ...) {
-    if (!all.equal(sum(p), 1)) {
-        stop("Vote shares do not add up to 1", call.=FALSE)
-    }
+  if (!isTRUE(all.equal(sum(p), 1))) {
+    stop("Vote shares do not add up to 1", call.=FALSE)
+  } else {
     return(rdirichlet(N, p))
+  }
 }
 
 #' Simulate seat allocations
@@ -68,13 +69,14 @@ simulate_vote_share <- function(p, N, ...) {
 #'     distribution
 #' 
 #' @export
-simulate <- function(seats, p, N=1000, threshold=0.03, ...) {
-    simulated_vote_shares <- simulate_vote_share(p, N)
-    res <- apply(simulated_vote_shares,
-                 1,
-                 function(x) share2seats(x, seats, threshold),
-                 simplify=FALSE)
-    sims <- do.call(rbind, res)
-    return(list("seats"=sims,
-                "shares"=simulated_vote_shares))
+_simulate <- function(seats, p, N=1000, threshold=0.03, ...) {
+  simulated_vote_shares <- simulate_vote_share(p, N)
+  res <- apply(simulated_vote_shares,
+               1,
+               function(x) share2seats(x, seats, threshold),
+               simplify=FALSE)
+  sims <- do.call(rbind, res)
+  return(list("seats"=sims,
+              "shares"=simulated_vote_shares))
 }
+
