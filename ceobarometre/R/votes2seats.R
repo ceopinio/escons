@@ -1,13 +1,13 @@
 #' Allocate seats to votes using D'Hondt formula
 #'
-#' @param votes A vector of total votes
 #' @param seats An integer with the total number of seats to allocate
+#' @param votes A vector of total votes
 #' @return A vector of integers of the same as length \code{votes}
 #'     with the number of seats corresponding to each party
 #'
 #' @note The function does not handle ties and relies on the internal
 #'     \code{order} function
-dhondt <- function(votes, seats, threshold=0.03) {
+dhondt <- function(seats, votes, threshold=0.03) {
   divisors <- 1:seats
   quotas <- outer(votes, divisors, '/') ## How to deal with ties
   last_seat <- quotas[order(quotas, decreasing=TRUE)]
