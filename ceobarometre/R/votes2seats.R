@@ -38,6 +38,7 @@ dhondt <- function(seats, votes) {
   return(seats)
 }
 
+
 #' Allocate seats to parties according to their shares
 #'
 #' @param seats An integer with the total number of seats
@@ -62,6 +63,7 @@ shares2seats <- function(seats, shares, threshold=0.03) {
   allocation[parties_above_thr] <- dhondt(seats, valid_shares_above_thr)
   return(allocation)
 }
+
 
 #' Simulate vote shares for different parties
 #'
@@ -104,6 +106,7 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
   sims <- do.call(rbind, res)
   return(sims)
 }
+
 
 #' Simulate seat allocations
 #'
