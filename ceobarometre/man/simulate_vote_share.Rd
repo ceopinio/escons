@@ -4,19 +4,20 @@
 \alias{simulate_vote_share}
 \title{Simulate vote shares for different parties}
 \usage{
-simulate_vote_share(p, N, ...)
+simulate_vote_share(shares, sigmas, N, ...)
 }
 \arguments{
-\item{p}{A vector of proportions (between 0 and 1) with the vote
-share for each party}
+\item{shares}{A vector of vote shares for each party}
 
 \item{N}{An integer with the number of simulations}
+
+\item{sigma}{A vector of vote share uncertainty for ech party}
 }
 \value{
 A matrix of dimensions \code{length(p)} x N with the
 simulated vote shares
 }
 \description{
-Simulates vote shares extracted from a Dirichlet distribution with
-parameters given by the vote share of each party
+Simulates vote shares extracted from a normal distribution centered
+at \code{shares} and with standard deviation \code{sigma}
 }

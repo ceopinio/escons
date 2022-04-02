@@ -4,12 +4,13 @@
 \alias{dhondt}
 \title{Allocate seats to votes using D'Hondt formula}
 \usage{
-dhondt(votes, seats, threshold = 0.03)
+dhondt(seats, votes)
 }
 \arguments{
-\item{votes}{A vector of total votes}
+\item{seats}{An integer with the total number of seats to allocate.}
 
-\item{seats}{An integer with the total number of seats to allocate}
+\item{votes}{A vector with the votes (integer or proportion) per
+parties.}
 }
 \value{
 A vector of integers of the same as length \code{votes}
@@ -19,6 +20,7 @@ with the number of seats corresponding to each party
 Allocate seats to votes using D'Hondt formula
 }
 \note{
-The function does not handle ties and relies on the internal
-\code{order} function
+The function handles ties by randomly selecting any of the
+parties with ties at a given step. As a result, the function may
+produce different results from the official ones.
 }

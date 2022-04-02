@@ -4,28 +4,50 @@
 \alias{simulate}
 \title{Simulate seat allocations}
 \usage{
-simulate(total_votes, seats, p, N = 1000, threshold = 0.03, ...)
+simulate(shares, sigmas, names = NULL, N = 1000, threshold = 0.03)
 }
 \arguments{
-\item{total_votes}{An integer with the total number of votes}
+\item{shares}{A \code{data.frame} columns named after each
+circunscription ("Barcelona", "Girona", "Tarragona", "Lleida")
+that contains the vote shares for each party.}
 
-\item{seats}{An integer with the total number of seats to be
-allocated}
-
-\item{p}{A vector of proportions (between 0 and 1) with the vote
-share for each party}
+\item{names}{An optional vector of party names. Defaults to NULL.
+The length must be equal to the number of rows in \code{shares}.}
 
 \item{N}{An integer with the number of simulations. Default is
-1,000}
+1000.}
 
-\item{threshold}{A proportion (between 0 and 1) with the threshold}
+\item{threshold}{The electoral threshold (between 0 and 1) for each
+circunscription. Default is 0.03.}
+
+\item{sigma}{A \code{data.frame} with the same structure as
+\code{shares} but with the vote share uncertainty for each party.}
 }
 \value{
-A list with two elements: \code{shares} is a matrix of size
-\code{length(p)} x \code{N} with the simulated vote share, and
-\code{seats} of the same dimensions with the simulated seat
-distribution
+An array with dimensions (\code{N}, number of parties, 4)
+with the simulated seat allocation for each party in each
+circunscription.
 }
 \description{
-Simulate seat allocations
+Simulates seat allocations for Catalunya using a normal
+distribution for uncertainty and applying D'Hondt's formula at the
+circunscription level.
+}
+\examples{
+\dontrun{
+# Vote shares
+res2021 <- data.frame("Barcelona"=c(25.0, 20.4, 17.9, 7.8, 7.8, 6.3, 6.1, 4.0),
+                      "Girona"=c(15.2, 21.8, 32.7, 6.1, 4.0, 9.0, 3.3, 2.0),
+                      "Lleida"=c(15.0, 26.6, 28.0, 5.5, 3.2, 7.4, 3.2, 3.5),
+                      "Tarragona"=c(20.0, 24.5, 19.4, 9.4, 4.9, 6.8, 5.2, 4.3))/100
+# Uncertainty
+sig2021 <- data.frame("Barcelona"=rep(.01, 8),
+                      "Girona"=rep(.01, 8),
+                      "Lleida"=rep(.01, 8),
+                      "Tarragona"=rep(.01, 8))
+# Party names
+parties <- c("PSC", "ERC", "JxCat", "Vox", "ECP–PEC", "CUP–G", "Cs", "PP")
+# Simulation
+res <- simulate(res2021, sig2021, parties)
+}
 }
