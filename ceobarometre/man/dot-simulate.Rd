@@ -7,13 +7,17 @@
 .simulate(seats, shares, sigmas, N, threshold, ...)
 }
 \arguments{
+\item{seats}{An integer with the total number of seats}
+
 \item{shares}{A vector of vote shares for each party.}
+
+\item{sigmas}{A vector of vote share uncertainty for ech party.}
 
 \item{N}{An integer with the number of simulations.}
 
 \item{threshold}{The electoral threshold (between 0 and 1)}
 
-\item{sigma}{A vector of vote share uncertainty for ech party.}
+\item{...}{Additional arguments (currently not used)}
 }
 \value{
 A matrix with the simulated seat distribution

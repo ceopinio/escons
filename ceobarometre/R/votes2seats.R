@@ -71,10 +71,13 @@ shares2seats <- function(seats, shares, threshold=0.03) {
 #' at \code{shares} and with standard deviation \code{sigma}
 #' 
 #' @param shares A vector of vote shares for each party
-#' @param sigma A vector of vote share uncertainty for ech party
+#' @param sigmas A vector of vote share uncertainty for ech party
 #' @param N An integer with the number of simulations
+#' @param ... Additional arguments (currently not used)
 #' @return A matrix of dimensions \code{length(p)} x N with the
 #'   simulated vote shares
+#'
+#' @importFrom stats rnorm
 simulate_vote_share <- function(shares, sigmas, N, ...) {  
   l <- length(shares) 
   simshare <- mapply(function(x, y) rnorm(N, x, y),
@@ -89,10 +92,12 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 
 #' Simulate seat allocations
 #'
+#' @param seats An integer with the total number of seats
 #' @param shares A vector of vote shares for each party.
-#' @param sigma A vector of vote share uncertainty for ech party.
+#' @param sigmas A vector of vote share uncertainty for ech party.
 #' @param N An integer with the number of simulations. 
 #' @param threshold The electoral threshold (between 0 and 1)
+#' @param ... Additional arguments (currently not used)
 #' @return A matrix with the simulated seat distribution
 .simulate <- function(seats, shares, sigmas, N, threshold, ...) {
   if (length(shares) != length(sigmas)) {
@@ -115,9 +120,8 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #' circunscription level.
 #'
 #' @param shares A \code{data.frame} columns named after each
-#'   circunscription ("Barcelona", "Girona", "Tarragona", "Lleida")
-#'   that contains the vote shares for each party.
-#' @param sigma A \code{data.frame} with the same structure as
+#'   circunscription
+#' @param sigmas A \code{data.frame} with the same structure as
 #'   \code{shares} but with the vote share uncertainty for each party.
 #' @param names An optional vector of party names. Defaults to NULL.
 #'   The length must be equal to the number of rows in \code{shares}.
@@ -125,9 +129,12 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #'   1000.
 #' @param threshold The electoral threshold (between 0 and 1) for each
 #'   circunscription. Default is 0.03.
+#' @param allocations A named vector with the number of seats for each circunscription.
+#' @param ... Additional arguments (currently not used)
 #' @return An array with dimensions (\code{N}, number of parties, 4)
 #'   with the simulated seat allocation for each party in each
 #'   circunscription.
+#'
 #' @examples
 #' \dontrun{
 #' # Vote shares
@@ -205,14 +212,9 @@ simulate <- function(shares,
 }
 
 
-#' Coerce a simulation to a data frame
-#'
-#' @param x An object of class \code{simulation}.
-#' @return A data frame with columns indicating the seat allocation
-#'   for each party at each circunscription and each simulation.
-#' 
+#' @method as.data.frame simulation
 #' @export
-as.data.frame.simulation <- function(x) {
+as.data.frame.simulation <- function(x, row.names, optional, ...) {
   dims <- dimnames(x)
   x <- array(aperm(x, c(2, 1, 3)), c(dim(x)[1] * dim(x)[2], dim(x)[3]))
   attr(x, "class") <- NULL
@@ -223,4 +225,3 @@ as.data.frame.simulation <- function(x) {
   x$party <- rep(dims[[2]], length(dims[[1]]))
   return(x)
 }
-

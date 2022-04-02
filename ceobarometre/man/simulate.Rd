@@ -15,8 +15,10 @@ simulate(
 }
 \arguments{
 \item{shares}{A \code{data.frame} columns named after each
-circunscription ("Barcelona", "Girona", "Tarragona", "Lleida")
-that contains the vote shares for each party.}
+circunscription}
+
+\item{sigmas}{A \code{data.frame} with the same structure as
+\code{shares} but with the vote share uncertainty for each party.}
 
 \item{names}{An optional vector of party names. Defaults to NULL.
 The length must be equal to the number of rows in \code{shares}.}
@@ -27,8 +29,9 @@ The length must be equal to the number of rows in \code{shares}.}
 \item{threshold}{The electoral threshold (between 0 and 1) for each
 circunscription. Default is 0.03.}
 
-\item{sigma}{A \code{data.frame} with the same structure as
-\code{shares} but with the vote share uncertainty for each party.}
+\item{allocations}{A named vector with the number of seats for each circunscription.}
+
+\item{...}{Additional arguments (currently not used)}
 }
 \value{
 An array with dimensions (\code{N}, number of parties, 4)

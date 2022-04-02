@@ -2,3 +2,4 @@
 
 S3method(as.data.frame,simulation)
 export(simulate)
+importFrom(stats,rnorm)

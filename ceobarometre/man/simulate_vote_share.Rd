@@ -9,9 +9,11 @@ simulate_vote_share(shares, sigmas, N, ...)
 \arguments{
 \item{shares}{A vector of vote shares for each party}
 
+\item{sigmas}{A vector of vote share uncertainty for ech party}
+
 \item{N}{An integer with the number of simulations}
 
-\item{sigma}{A vector of vote share uncertainty for ech party}
+\item{...}{Additional arguments (currently not used)}
 }
 \value{
 A matrix of dimensions \code{length(p)} x N with the
