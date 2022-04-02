@@ -75,10 +75,9 @@ shares2seats <- function(seats, shares, threshold=0.03) {
 #'   simulated vote shares
 simulate_vote_share <- function(shares, sigmas, N, ...) {  
   l <- length(shares) 
-  simshare <- mapply(function(x, y) rnorm(N,
-                                          x,
-                                          y),
-                     shares, sigmas)
+  simshare <- mapply(function(x, y) rnorm(N, x, y),
+                     shares,
+                     sigmas)
   if (any(simshare < 0) | any(simshare > 1)) {
     warning("Some simulate vote shares are below 0 or above 1.", call.=FALSE)
   }
