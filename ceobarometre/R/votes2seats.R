@@ -155,7 +155,9 @@ simulate <- function(shares,
   if (!isTRUE(all.equal(dim(shares), dim(sigmas)))) {
     stop(sprintf("%s and %s must have same dimensions", sQuote("shares"), sQuote("sigmas")), call.=FALSE)
   }
-  
+  if (!is.numeric(allocations)) {
+    stop(sprintf("%s must be a vector", sQuote("allocations")), call.=FALSE)
+  }
   if (!setequal(names(shares), names(allocations)) |
         !setequal(names(shares), names(sigmas))) {
     stop(sprintf("The names of %s, %s and %s do not match",
