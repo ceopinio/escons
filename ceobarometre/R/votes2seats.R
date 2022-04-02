@@ -144,29 +144,28 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #' res <- simulate(res2021, sig2021, parties)
 #' }
 #' @export
-simulate <- function(shares, sigmas, names=NULL, N=1000, threshold=0.03) {
-  if (!is.data.frame(shares)) {
-    stop(sprintf("%s must be a data.frame with four columns", sQuote("shares")), call.=FALSE)
+simulate <- function(shares,
+                     sigmas,
+                     names=NULL,
+                     N=1000,
+                     threshold=0.03,
+                     allocations=c("Barcelona"=85, "Girona"=17, "Tarragona"=15, "Lleida"=18)) {
+  if (!is.data.frame(shares) | !is.data.frame(sigmas)) {
+    stop(sprintf("%s and %s must be data.frames", sQuote("shares"), sQuote("sigmas")), call.=FALSE)
   }
-  if (!is.data.frame(sigmas)) {
-    stop(sprintf("%s must be a data.frame with four columns", sQuote("sigmas")), call.=FALSE)
+  if (!isTRUE(all.equal(dim(shares), dim(sigmas)))) {
+    stop(sprintf("%s and %s must have same dimensions", sQuote("shares"), sQuote("sigmas")), call.=FALSE)
   }
-  CIRCUNSCRIPTIONS <- c("Barcelona"=85,
-                        "Girona"=17,
-                        "Tarragona"=15,
-                        "Lleida"=18)
-  ncircunscriptions <- names(CIRCUNSCRIPTIONS)
-  diffcirc <- setdiff(ncircunscriptions, names(shares))
   
-  if (length(diffcirc) != 0) {
-    needed <- paste(ncircunscriptions, collapse=", ")
-    notfound <- paste(diffcirc, collapse=", ")
-    msg <- "Incomplete input\nNames of 'shares' must include: %s\nNot found: %s"
-    stop(sprintf(msg,
-                 needed,
-                 notfound), call.=FALSE)
+  if (!setequal(names(shares), names(allocations)) |
+        !setequal(names(shares), names(sigmas))) {
+    stop(sprintf("The names of %s, %s and %s do not match",
+                 sQuote("shares"),
+                 sQuote("sigmas"),
+                 sQuote("allocations")
+                 ))
   }
-
+  
   if (!is.null(names)) {
     if (length(names) != nrow(shares)) {
       stop(sprintf("The length of %s must be equal to the number of rows of %s",
@@ -176,22 +175,22 @@ simulate <- function(shares, sigmas, names=NULL, N=1000, threshold=0.03) {
     }
     else row.names(shares) <- names
   }
-
+  
   res <- array(NA,
-               dim=c(N, nrow(shares), 4),
+               dim=c(N, nrow(shares), length(allocations)),
                dimnames=list(1:N,
                              row.names(shares),
                              names(shares)))
-  for (i in seq_along(CIRCUNSCRIPTIONS)) {
-    simulation <- try(.simulate(seats=CIRCUNSCRIPTIONS[i],
-                                shares=shares[, names(CIRCUNSCRIPTIONS[i])],
-                                sigmas=sigmas[, names(CIRCUNSCRIPTIONS[i])],
+  for (i in seq_along(allocations)) {
+    simulation <- try(.simulate(seats=allocations[i],
+                                shares=shares[, names(allocations[i])],
+                                sigmas=sigmas[, names(allocations[i])],
                                 N=N,
                                 threshold=threshold),
                       silent=TRUE)
     if (inherits(simulation, "try-error")) {
       msg <- sprintf("Could not simulate %s: %s",
-                     names(CIRCUNSCRIPTIONS[i]),
+                     names(allocations[i]),
                      attr(simulation, "condition")$message)
       stop(msg, call.=FALSE)
     }
@@ -215,6 +214,7 @@ as.data.frame.simulation <- function(x) {
   attr(x, "class") <- NULL
   x <- as.data.frame(x)
   names(x) <- dims[[3]]
+  x$total <- rowSums(x)
   x$simulation <- rep(dims[[1]], each=length(dims[[2]]))
   x$party <- rep(dims[[2]], length(dims[[1]]))
   return(x)

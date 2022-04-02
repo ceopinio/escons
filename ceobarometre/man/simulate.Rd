@@ -4,7 +4,14 @@
 \alias{simulate}
 \title{Simulate seat allocations}
 \usage{
-simulate(shares, sigmas, names = NULL, N = 1000, threshold = 0.03)
+simulate(
+  shares,
+  sigmas,
+  names = NULL,
+  N = 1000,
+  threshold = 0.03,
+  allocations = c(Barcelona = 85, Girona = 17, Tarragona = 15, Lleida = 18)
+)
 }
 \arguments{
 \item{shares}{A \code{data.frame} columns named after each

@@ -2,7 +2,7 @@ Package: ceobarometre
 Title: Vote share estimation and seat simulation for the Barometres of the CEO
 Version: 0.0.0.9000
 Authors@R: 
-    person("Gonzalo", "Rivero", "me@griverorz.net", role = c("aut", "cre"))
+    person(given="Gonzalo", family="Rivero", middle=NULL, email="me@griverorz.net", role = c("aut", "cre"))
 Description: Provides functionality to produce vote share estimation starting from raw Barometre CEO data. It also allows the  ser to simulate seat allocation for the elections to the Parlament de Catalunya incorporating the uncertainty of previous stages. 
 License: MIT + file LICENSE
 Encoding: UTF-8
