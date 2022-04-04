@@ -10,12 +10,11 @@ simulate(
   names = NULL,
   N = 1000,
   threshold = 0.03,
-  allocations = c(Barcelona = 85, Girona = 17, Tarragona = 15, Lleida = 18)
+  dsize = c(Barcelona = 85, Girona = 17, Tarragona = 15, Lleida = 18)
 )
 }
 \arguments{
-\item{shares}{A \code{data.frame} columns named after each
-circunscription}
+\item{shares}{A \code{data.frame} columns named after each district}
 
 \item{sigmas}{A \code{data.frame} with the same structure as
 \code{shares} but with the vote share uncertainty for each party.}
@@ -27,20 +26,19 @@ The length must be equal to the number of rows in \code{shares}.}
 1000.}
 
 \item{threshold}{The electoral threshold (between 0 and 1) for each
-circunscription. Default is 0.03.}
+district. Default is 0.03.}
 
-\item{allocations}{A named vector with the number of seats for each
-circunscription.}
+\item{dsize}{A named vector with the district size}
 }
 \value{
-An array with dimensions (\code{N}, number of parties, 4)
-with the simulated seat allocation for each party in each
-circunscription.
+An array with dimensions (\code{N}, number of parties,
+number of districts) with the simulated seat allocation for each
+party in each district.
 }
 \description{
 Simulates seat allocations for Catalunya using a normal
 distribution for uncertainty and applying D'Hondt's formula at the
-circunscription level.
+district level.
 }
 \examples{
 \dontrun{
@@ -50,7 +48,7 @@ res2021 <- data.frame("Barcelona"=c(25.0, 20.4, 17.9, 7.8, 7.8, 6.3, 6.1, 4.0),
                       "Lleida"=c(15.0, 26.6, 28.0, 5.5, 3.2, 7.4, 3.2, 3.5),
                       "Tarragona"=c(20.0, 24.5, 19.4, 9.4, 4.9, 6.8, 5.2, 4.3))/100
 # Uncertainty
-sig2021 <- moe(res2021, N=3000, level=.095)
+sig2021 <- moe(res2021, N=1500, level=.95)
 # Party names
 parties <- c("PSC", "ERC", "JxCat", "Vox", "ECP–PEC", "CUP–G", "Cs", "PP")
 # Simulation

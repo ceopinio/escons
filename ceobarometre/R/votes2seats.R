@@ -123,10 +123,9 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #'
 #' Simulates seat allocations for Catalunya using a normal
 #' distribution for uncertainty and applying D'Hondt's formula at the
-#' circunscription level.
+#' district level.
 #'
-#' @param shares A \code{data.frame} columns named after each
-#'   circunscription
+#' @param shares A \code{data.frame} columns named after each district
 #' @param sigmas A \code{data.frame} with the same structure as
 #'   \code{shares} but with the vote share uncertainty for each party.
 #' @param names An optional vector of party names. Defaults to NULL.
@@ -134,12 +133,11 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #' @param N An integer with the number of simulations. Default is
 #'   1000.
 #' @param threshold The electoral threshold (between 0 and 1) for each
-#'   circunscription. Default is 0.03.
-#' @param allocations A named vector with the number of seats for each
-#'   circunscription.
-#' @return An array with dimensions (\code{N}, number of parties, 4)
-#'   with the simulated seat allocation for each party in each
-#'   circunscription.
+#'   district. Default is 0.03.
+#' @param dsize A named vector with the district size
+#' @return An array with dimensions (\code{N}, number of parties,
+#'   number of districts) with the simulated seat allocation for each
+#'   party in each district.
 #'
 #' @examples
 #' \dontrun{
@@ -149,11 +147,13 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #'                       "Lleida"=c(15.0, 26.6, 28.0, 5.5, 3.2, 7.4, 3.2, 3.5),
 #'                       "Tarragona"=c(20.0, 24.5, 19.4, 9.4, 4.9, 6.8, 5.2, 4.3))/100
 #' # Uncertainty
-#' sig2021 <- moe(res2021, N=3000, level=.095)
+#' sig2021 <- moe(res2021, N=3000, level=.95) # 3000 in *each* district
 #' # Party names
 #' parties <- c("PSC", "ERC", "JxCat", "Vox", "ECP–PEC", "CUP–G", "Cs", "PP")
 #' # Simulation
 #' res <- simulate(res2021, sig2021, parties)
+#' # Transform to data.frame for analysis
+#' res <- as.data.frame(res)
 #' }
 #' @export
 simulate <- function(shares,
@@ -161,10 +161,10 @@ simulate <- function(shares,
                      names=NULL,
                      N=1000,
                      threshold=0.03,
-                     allocations=c("Barcelona"=85,
-                                   "Girona"=17,
-                                   "Tarragona"=15,
-                                   "Lleida"=18)) {
+                     dsize=c("Barcelona"=85,
+                             "Girona"=17,
+                             "Tarragona"=15,
+                             "Lleida"=18)) {
   if (!is.data.frame(shares) | !is.data.frame(sigmas)) {
     stop(sprintf("%s and %s must be data.frames",
                  sQuote("shares"),
@@ -175,15 +175,15 @@ simulate <- function(shares,
                  sQuote("shares"),
                  sQuote("sigmas")), call.=FALSE)
   }
-  if (!is.numeric(allocations)) {
-    stop(sprintf("%s must be a vector", sQuote("allocations")), call.=FALSE)
+  if (!is.numeric(dsize)) {
+    stop(sprintf("%s must be a vector", sQuote("dsize")), call.=FALSE)
   }
-  if (!setequal(names(shares), names(allocations)) |
+  if (!setequal(names(shares), names(dsize)) |
         !setequal(names(shares), names(sigmas))) {
     stop(sprintf("The names of %s, %s and %s do not match",
                  sQuote("shares"),
                  sQuote("sigmas"),
-                 sQuote("allocations")
+                 sQuote("dsize")
                  ))
   }
   
@@ -198,20 +198,20 @@ simulate <- function(shares,
   }
   
   res <- array(NA,
-               dim=c(N, nrow(shares), length(allocations)),
+               dim=c(N, nrow(shares), length(dsize)),
                dimnames=list(1:N,
                              row.names(shares),
                              names(shares)))
-  for (i in seq_along(allocations)) {
-    simulation <- try(.simulate(seats=allocations[i],
-                                shares=shares[, names(allocations[i])],
-                                sigmas=sigmas[, names(allocations[i])],
+  for (i in seq_along(dsize)) {
+    simulation <- try(.simulate(seats=dsize[i],
+                                shares=shares[, names(dsize[i])],
+                                sigmas=sigmas[, names(dsize[i])],
                                 N=N,
                                 threshold=threshold),
                       silent=TRUE)
     if (inherits(simulation, "try-error")) {
       msg <- sprintf("Could not simulate %s: %s",
-                     names(allocations[i]),
+                     names(dsize[i]),
                      attr(simulation, "condition")$message)
       stop(msg, call.=FALSE)
     }
@@ -270,7 +270,11 @@ moe.default <- function(x, N, level, ...) {
     stop("The confidence level must be a value between 0 and 1")
   }
   z <- qnorm(level)
-  return(z * sqrt((x * (1 - x)) / N))
+  res <- z * sqrt((x * (1 - x)) / N)
+  if (any(res < 0)) {
+    stop("MoE is less than zero. Is the confidence level correct?")
+  }
+  return(res)
 }
 
 
