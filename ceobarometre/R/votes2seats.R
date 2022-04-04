@@ -32,7 +32,8 @@ dhondt <- function(seats, votes) {
   seats <- rowSums(W)
   
   if (ties > 0) {
-    warning(sprintf("%s ties were found during the seat allocation", ties), call.=FALSE)
+    warning(sprintf("%s ties were found during the seat allocation", ties),
+            call.=FALSE)
   }
   
   return(seats)
@@ -53,11 +54,14 @@ dhondt <- function(seats, votes) {
 #' shares2seats(85, res2021)
 #' }
 shares2seats <- function(seats, shares, threshold=0.03) {
-  if (!isTRUE(all.equal(sum(shares), 1))) {
-    warning("Vote shares do not add up to 1", call.=FALSE)
-  } 
+  if (is.null(sys.call(-1))) { ## If called directly
+    if (any(shares < 0) | any(shares > 1)) {
+      stop("Vote shares must be between 0 and 1", call.=FALSE)
+    }
+  }
+    
   shares_above_thr <- shares >= threshold
-  parties_above_thr <- which(shares_above_thr)
+  parties_above_thr <- which(shares_above_thr) ## Make room for those below thr
   valid_shares_above_thr <- shares[shares_above_thr]
   allocation <- rep(0, length(shares))
   allocation[parties_above_thr] <- dhondt(seats, valid_shares_above_thr)
@@ -84,7 +88,7 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
                      shares,
                      sigmas)
   if (any(simshare < 0) | any(simshare > 1)) {
-    warning("Some simulate vote shares are below 0 or above 1.", call.=FALSE)
+    warning("Some simulated vote shares are below 0 or above 1.", call.=FALSE)
   }
   return(simshare)
 }
@@ -101,7 +105,9 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #' @return A matrix with the simulated seat distribution
 .simulate <- function(seats, shares, sigmas, N, threshold, ...) {
   if (length(shares) != length(sigmas)) {
-    stop("Length of shares and sigmas is not equal", call.=FALSE)
+    stop(sprintf("Length of %s and %s is not equal",
+                 sQuote("shares"),
+                 sQuote("sigmas")), call.=FALSE)
   }
   simulated_vote_shares <- simulate_vote_share(shares, sigmas, N)
   res <- apply(simulated_vote_shares,
@@ -129,8 +135,8 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #'   1000.
 #' @param threshold The electoral threshold (between 0 and 1) for each
 #'   circunscription. Default is 0.03.
-#' @param allocations A named vector with the number of seats for each circunscription.
-#' @param ... Additional arguments (currently not used)
+#' @param allocations A named vector with the number of seats for each
+#'   circunscription.
 #' @return An array with dimensions (\code{N}, number of parties, 4)
 #'   with the simulated seat allocation for each party in each
 #'   circunscription.
@@ -143,10 +149,7 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #'                       "Lleida"=c(15.0, 26.6, 28.0, 5.5, 3.2, 7.4, 3.2, 3.5),
 #'                       "Tarragona"=c(20.0, 24.5, 19.4, 9.4, 4.9, 6.8, 5.2, 4.3))/100
 #' # Uncertainty
-#' sig2021 <- data.frame("Barcelona"=rep(.01, 8),
-#'                       "Girona"=rep(.01, 8),
-#'                       "Lleida"=rep(.01, 8),
-#'                       "Tarragona"=rep(.01, 8))
+#' sig2021 <- moe(res2021, N=3000, level=.095)
 #' # Party names
 #' parties <- c("PSC", "ERC", "JxCat", "Vox", "ECP–PEC", "CUP–G", "Cs", "PP")
 #' # Simulation
@@ -154,16 +157,23 @@ simulate_vote_share <- function(shares, sigmas, N, ...) {
 #' }
 #' @export
 simulate <- function(shares,
-                     sigmas,
+                     sigmas=NULL,
                      names=NULL,
                      N=1000,
                      threshold=0.03,
-                     allocations=c("Barcelona"=85, "Girona"=17, "Tarragona"=15, "Lleida"=18)) {
+                     allocations=c("Barcelona"=85,
+                                   "Girona"=17,
+                                   "Tarragona"=15,
+                                   "Lleida"=18)) {
   if (!is.data.frame(shares) | !is.data.frame(sigmas)) {
-    stop(sprintf("%s and %s must be data.frames", sQuote("shares"), sQuote("sigmas")), call.=FALSE)
+    stop(sprintf("%s and %s must be data.frames",
+                 sQuote("shares"),
+                 sQuote("sigmas")), call.=FALSE)
   }
   if (!isTRUE(all.equal(dim(shares), dim(sigmas)))) {
-    stop(sprintf("%s and %s must have same dimensions", sQuote("shares"), sQuote("sigmas")), call.=FALSE)
+    stop(sprintf("%s and %s must have same dimensions",
+                 sQuote("shares"),
+                 sQuote("sigmas")), call.=FALSE)
   }
   if (!is.numeric(allocations)) {
     stop(sprintf("%s must be a vector", sQuote("allocations")), call.=FALSE)
@@ -214,14 +224,66 @@ simulate <- function(shares,
 
 #' @method as.data.frame simulation
 #' @export
-as.data.frame.simulation <- function(x, row.names, optional, ...) {
+as.data.frame.simulation <- function(x, row.names, optional, enrich=TRUE, ...) {
   dims <- dimnames(x)
   x <- array(aperm(x, c(2, 1, 3)), c(dim(x)[1] * dim(x)[2], dim(x)[3]))
   attr(x, "class") <- NULL
   x <- as.data.frame(x)
   names(x) <- dims[[3]]
-  x$total <- rowSums(x)
-  x$simulation <- rep(dims[[1]], each=length(dims[[2]]))
-  x$party <- rep(dims[[2]], length(dims[[1]]))
+  if (enrich) {
+    x$total <- rowSums(x)
+    x$party <- rep(dims[[2]], length(dims[[1]]))    
+  }
+  x$simulation <- rep(dims[[1]], each=length(dims[[2]]))  
   return(x)
+}
+
+
+#' Calculate margin of error of a proportion
+#'
+#' Calculates margin of error of a proportion for a given confidence
+#' level and sample size
+#'
+#' @param x A numeric vector or data.frame
+#' @param N The sample size
+#' @param level The confidence level (between 0 and 1)
+#' @param ... Additional parameters (currently not used)
+#' @examples
+#' \dontrun{
+#' moe(.5, N=1000, level=.95)
+#' moe(res2021, N=3000, level=.95)
+#' }
+#' @export
+moe <- function(x, ...) {
+  UseMethod("moe")
+}
+
+
+#' @rdname moe
+#' @importFrom stats qnorm
+#' @export
+moe.default <- function(x, N, level, ...) {
+  if (any(x < 0) | any(x > 1)) {
+    stop("Input value must be a proportion between 0 and 1")
+  }
+  if (level < 0 | level > 1) {
+    stop("The confidence level must be a value between 0 and 1")
+  }
+  z <- qnorm(level)
+  return(z * sqrt((x * (1 - x)) / N))
+}
+
+
+#' @rdname moe
+#' @export
+moe.numeric <- function(x, N, level, ...) {
+  return(moe.default(x, N, level))
+}
+
+
+#' @rdname moe
+#' @export
+moe.data.frame <- function(x, N, level, ...) {
+  res <- lapply(x, function(x) moe.default(x, N, level))
+  return(as.data.frame(do.call(cbind, res)))
 }
