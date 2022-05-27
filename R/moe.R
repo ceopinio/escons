@@ -1,4 +1,3 @@
-
 #' Calculate margin of error of a proportion
 #'
 #' Calculates margin of error of a proportion for a given confidence

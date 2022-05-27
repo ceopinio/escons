@@ -12,7 +12,6 @@
 #'
 #' @importFrom stats rnorm
 simulate_vote_share <- function(shares, sigmas, N, ...) {  
-  l <- length(shares) 
   simshare <- mapply(function(x, y) rnorm(N, x, y),
                      shares,
                      sigmas)
