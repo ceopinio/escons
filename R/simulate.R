@@ -129,7 +129,7 @@ simulate <- function(shares,
                dim=c(N, nrow(shares), length(dsize)),
                dimnames=list(1:N,
                              row.names(shares),
-                             names(shares)))
+                             names(dsize)))
   for (i in seq_along(dsize)) {
     simulation <- try(.simulate(seats=dsize[i],
                                 shares=shares[, names(dsize[i])],

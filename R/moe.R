@@ -28,7 +28,7 @@ moe.default <- function(x, N, level, ...) {
   if (level < 0 | level > 1) {
     stop("The confidence level must be a value between 0 and 1")
   }
-  z <- qnorm(level)
+  z <- qnorm(1 - (1 - level)/2)
   res <- z * sqrt((x * (1 - x)) / N)
   if (any(res < 0)) {
     stop("MoE is less than zero. Is the confidence level correct?")
