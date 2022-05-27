@@ -1,4 +1,4 @@
-# Building and deployment of the package
+# Building and deploying the package
 
 # This file assumes that the user has bump2version installed:
 # https://pypi.org/project/bump2version/
@@ -7,9 +7,6 @@ version := patch
 ROOT_DIR := $(shell basename $(dir $(abspath $$PWD)))
 PKG := $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
 BRANCH:= $(shell git rev-parse --symbolic-full-name --abbrev-ref HEAD)
-
-print:
-	echo $(ROOT_DIR)
 
 all: clean test docs build check 
 
