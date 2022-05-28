@@ -22,7 +22,7 @@ check: clean build
 	R CMD check $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
 
 install: check
-	R CMD install .
+	R CMD install $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
 
 bump:
 	git checkout $(BRANCH)

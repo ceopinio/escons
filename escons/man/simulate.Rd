@@ -10,7 +10,7 @@ simulate(
   names = NULL,
   N = 1000,
   threshold = 0.03,
-  dsize = c(Barcelona = 85, Girona = 17, Tarragona = 15, Lleida = 18)
+  dsize = c(Barcelona = 85, Girona = 17, Tarragona = 18, Lleida = 15)
 )
 }
 \arguments{

@@ -91,8 +91,8 @@ simulate <- function(shares,
                      threshold=0.03,
                      dsize=c("Barcelona"=85,
                              "Girona"=17,
-                             "Tarragona"=15,
-                             "Lleida"=18)) {
+                             "Tarragona"=18,
+                             "Lleida"=15)) {
   if (!is.data.frame(shares) | !is.data.frame(sigmas)) {
     stop(sprintf("%s and %s must be data.frames",
                  sQuote("shares"),
