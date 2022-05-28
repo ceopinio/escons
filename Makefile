@@ -21,7 +21,7 @@ build: docs
 check: clean build
 	R CMD check $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
 
-install: build check
+install: check
 	R CMD install .
 
 bump:
