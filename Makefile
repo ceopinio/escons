@@ -5,13 +5,12 @@
 
 version := patch
 ROOT_DIR := $(shell basename $(dir $(abspath $$PWD)))
-PKG := $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
 BRANCH:= $(shell git rev-parse --symbolic-full-name --abbrev-ref HEAD)
 
 all: clean test docs build check 
 
 clean:
-	- rm -r $(ROOT_DIR).Rcheck $(PKG)
+	- rm -r $(ROOT_DIR).Rcheck $(ROOT_DIR)*.tar.gz
 
 docs: clean
 	Rscript -e 'roxygen2::roxygenise("$(ROOT_DIR)")'
@@ -19,8 +18,8 @@ docs: clean
 build: docs
 	R CMD build $(ROOT_DIR)
 
-check: build
-	R CMD check $(PKG)
+check: clean build
+	R CMD check $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
 
 install: build check
 	R CMD install .
