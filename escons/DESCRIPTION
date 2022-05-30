@@ -1,6 +1,6 @@
 Package: escons
 Title: Seat simulation for the Barometres of the CEO
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: 
     person(given="Gonzalo", family="Rivero", middle=NULL, email="me@griverorz.net", role = c("aut", "cre"))
 Description: Provides functionality make simulations of seat allocations using vote shares from survey data. This is a second sentence.
