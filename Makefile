@@ -15,14 +15,14 @@ clean:
 docs: clean
 	Rscript -e 'roxygen2::roxygenise("$(ROOT_DIR)")'
 
-build: docs
+build: 
 	R CMD build $(ROOT_DIR)
 
 check: clean build
-	R CMD check $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
+	R CMD check $(shell find . -maxdepth 1 -type f -name "$(ROOT_DIR)*.tar.gz")
 
 install: check
-	R CMD install $(shell find . -type f -name "$(ROOT_DIR)*.tar.gz")
+	R CMD install $(shell find . -maxdepth 1 -type f -name "$(ROOT_DIR)*.tar.gz")
 
 bump:
 	git checkout $(BRANCH)
