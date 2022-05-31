@@ -11,3 +11,6 @@ expect_equal(round(moe(.5, 1000, .95), 3), 0.031)
 ## Checks MOE for value against table using data.frame method
 expect_equal(round(moe(data.frame("a"=.5, "b"=.5), 1000, .95), 3),
              data.frame("a"=.031, "b"=.031))
+## Checks MOE for value against table using data.frame method with different N
+expect_equal(round(moe(data.frame("a"=.5, "b"=.5), c(1000, 100), .95), 3),
+             data.frame("a"=.031, "b"=.098))

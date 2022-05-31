@@ -47,6 +47,6 @@ moe.numeric <- function(x, N, level, ...) {
 #' @rdname moe
 #' @export
 moe.data.frame <- function(x, N, level, ...) {
-  res <- lapply(x, function(x) moe.default(x, N, level))
+  res <- mapply(\(data, size) moe.default(data, size, level), data=x, size=N, SIMPLIFY=FALSE)
   return(as.data.frame(do.call(cbind, res)))
 }
