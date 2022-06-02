@@ -1,4 +1,5 @@
 # The `escons` R package
+![R CMD check](https://github.com/griverorz/escons/actions/workflows/r.yml/badge.svg)
 
 `escons` is an R package from the Centre d'Estudis d'Opinió to
 simulate seat allocations using data from electoral surveys.
