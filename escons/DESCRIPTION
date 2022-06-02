@@ -1,9 +1,15 @@
 Package: escons
-Title: Seat simulation for the Barometres of the CEO
+Title: Simulate seat allocation using survey data
 Version: 0.0.6
 Authors@R: 
-    person(given="Gonzalo", family="Rivero", middle=NULL, email="me@griverorz.net", role = c("aut", "cre"))
-Description: Provides functionality make simulations of seat allocations using vote shares from survey data. This is a second sentence.
+    person(given="Gonzalo",
+    family="Rivero",
+    middle=NULL,
+    email="me@griverorz.net",
+    role = c("aut", "cre"))
+Description: Provides functionality to make simulations of seat allocations
+             using vote shares from survey data. The package is designed for use with Baròmetre
+             data from the Centre d'Estudis d'Opinió. 
 Depends:
     R (>= 4.1.0)
 Suggests: 
@@ -12,4 +18,3 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
-Config/testthat/edition: 3
