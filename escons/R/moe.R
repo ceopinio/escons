@@ -4,7 +4,8 @@
 #' level and sample size
 #'
 #' @param x A numeric vector or data.frame
-#' @param N The sample size
+#' @param N The sample size. If \code{x} is a data.frame, N can be a
+#'   vector of length equal to the number of columns of \code{x}
 #' @param level The confidence level (between 0 and 1)
 #' @param ... Additional parameters (currently not used)
 #' @examples
