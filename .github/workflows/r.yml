@@ -40,5 +40,5 @@ jobs:
         run: |
           R CMD build escons
           PKG=$(find . -maxdepth 1 -type f -name "escons*.tar.gz")
-          R CMD check $PKG
+          R CMD check $PKG --no-manual --no-build-vignettes 
         shell: bash
