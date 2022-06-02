@@ -7,9 +7,10 @@ Authors@R:
     middle=NULL,
     email="me@griverorz.net",
     role = c("aut", "cre"))
-Description: Provides functionality to make simulations of seat allocations
-             using vote shares from survey data. The package is designed for use with Baròmetre
-             data from the Centre d'Estudis d'Opinió. 
+Description: Provides functionality to make simulations of seat
+    allocations using vote shares from survey data. The package is
+    designed for use with Baròmetre data from the Centre d'Estudis
+    d'Opinió.
 Depends:
     R (>= 4.1.0)
 Suggests: 
